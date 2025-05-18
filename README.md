@@ -1,4 +1,5 @@
 # spaCy-redactor
+```
 spacy-redactor/
 ├── app/
 │   ├── __init__.py
@@ -25,3 +26,4 @@ spacy-redactor/
 │   └── workflows/
 │       └── ci.yml           # GitHub Actions pipeline
 └── README.md
+```
