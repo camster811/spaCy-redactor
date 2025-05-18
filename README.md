@@ -1,4 +1,14 @@
 # spaCy-redactor
+
+An async redaction backend service using FastAPI, spaCy NLP, asyncio, and CI/CD workflows. Built to simulate a system for identifying and redacting sensitive information in text documents.
+
+- ✅ Named Entity Redaction via spaCy
+- 🧠 Logical Inference on Redactions
+- ⚡ Async background processing using `asyncio`
+- 🧪 Automated tests with `pytest` + `httpx`
+- 🐳 Dockerized setup with CI/CD via GitHub Actions
+
+# Project Structure
 ```
 spacy-redactor/
 ├── app/
@@ -27,3 +37,5 @@ spacy-redactor/
 │       └── ci.yml           # GitHub Actions pipeline
 └── README.md
 ```
+
+
