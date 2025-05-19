@@ -27,7 +27,6 @@ def sanitize_text(text):
                 {
                     "type": ent.label_,
                     "span": [start, end],
-                    "reason": "Sensitive information",
                     "text": original,
                 }
             )
@@ -39,12 +38,3 @@ def sanitize_text(text):
 
     metadata = annotate_redaction(metadata)  # Annotate metadata with reasons
     return redacted_text, metadata
-
-
-# Example usage
-text = (
-    "The reporter said that it was John Mark that gave him the news in London last year"
-)
-redacted_text, metadata = sanitize_text(text)
-print("Redacted Text:", redacted_text)
-print("Metadata:", metadata)
