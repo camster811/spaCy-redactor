@@ -1,5 +1,6 @@
 # Load and initialize spaCy NLP model
 import spacy
+from inference import annotate_redaction
 
 nlp = spacy.load("en_core_web_sm")  # Load the spaCy model for NER
 
@@ -36,6 +37,7 @@ def sanitize_text(text):
             # Update offset for next replacements
             offset += len("[REDACTED]") - (end - start)
 
+    metadata = annotate_redaction(metadata)  # Annotate metadata with reasons
     return redacted_text, metadata
 
 
