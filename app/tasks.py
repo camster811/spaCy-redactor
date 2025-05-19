@@ -1,9 +1,8 @@
 # Import asyncio and maintain an in-memory dict of job_id → status/results
 import asyncio
 from typing import Dict, Any
-from pydantic import BaseModel
 from redact import sanitize_text
-from models import TextSubmission, JobStatus, RedactedResult
+from models import JobStatus, RedactedResult
 from logger import logger
 
 # In-memory job store: job_id -> status/results
