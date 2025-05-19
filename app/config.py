@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # Define config variables (DEBUG, API_TITLE, LOG_LEVEL)
 
 # Central place to manage app-wide settings
-load_dotenv()
+load_dotenv("../.env")
 
 DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
 API_TITLE = os.getenv("API_TITLE", "spaCy Redactor API")
