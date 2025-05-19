@@ -43,6 +43,7 @@ source .venv/bin/activate
 cd app/
 python main.py
 navigate to http://127.0.0.1:8000/docs and enter text or alternatively use curl commands
+
 ex. 
 1. 
 curl -X POST "http://127.0.0.1:8000/submit" -H "Content-Type: application/json" -d '{"text": "John Mark met with Jane Doe in London last year."}'
