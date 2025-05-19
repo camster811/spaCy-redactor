@@ -21,7 +21,6 @@ job_store = JobStore()  # job_id: {"status": str, "result": RedactedResult}
 
 async def run_redaction_task(job_id: str, text: str):
     try:
-        logger.info(f"Job {job_id} queued")
         redacted_result = await redact_text(job_id, text)
         result = redacted_result["result"]
 
@@ -48,18 +47,25 @@ async def run_redaction_task(job_id: str, text: str):
 async def submit_text(
     text_submission: TextSubmission, background_tasks: BackgroundTasks
 ):
-    job_id = str(uuid.uuid4())
-    logger.info(f"Job {job_id} queued")
-    job_store.add_job(
-        job_id,
-        "queued",
-        RedactedResult(job_id=job_id, redacted_text="", metadata=[]),
-    )
-    background_tasks.add_task(run_redaction_task, job_id, text_submission.text)
-    return JSONResponse(
-        content={"job_id": job_id},
-        status_code=202,
-    )
+    try:
+        job_id = str(uuid.uuid4())
+        logger.info(f"Job {job_id} queued")
+        job_store.add_job(
+            job_id,
+            "queued",
+            RedactedResult(job_id=job_id, redacted_text="", metadata=[]),
+        )
+        background_tasks.add_task(run_redaction_task, job_id, text_submission.text)
+        return JSONResponse(
+            content={"job_id": job_id},
+            status_code=202,
+        )
+    except Exception as e:
+        logger.error(f"Error submitting job: {e}")
+        return JSONResponse(
+            content={"error": "Failed to submit job"},
+            status_code=500,
+        )
 
 
 # Define GET /status/{job_id}
