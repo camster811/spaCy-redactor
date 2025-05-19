@@ -12,7 +12,7 @@ nlp = spacy.load("en_core_web_sm")  # Load the spaCy model for NER
 
 
 # Return redacted text and metadata
-def sanitize_names(text):
+def sanitize_text(text):
     doc = nlp(text)
     redacted_text = text
     metadata = []
@@ -43,6 +43,6 @@ def sanitize_names(text):
 text = (
     "The reporter said that it was John Mark that gave him the news in London last year"
 )
-redacted_text, metadata = sanitize_names(text)
+redacted_text, metadata = sanitize_text(text)
 print("Redacted Text:", redacted_text)
 print("Metadata:", metadata)
