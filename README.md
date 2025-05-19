@@ -31,11 +31,26 @@ spacy-redactor/
 ├── Dockerfile               # Container build for spaCy + FastAPI
 ├── docker-compose.yml       # Compose multi-service setup (optional)
 ├── requirements.txt         # App dependencies
-├── .env.example             # Example environment variables
+├── .env                     # environment variables
 ├── .github/
 │   └── workflows/
 │       └── ci.yml           # GitHub Actions pipeline
 └── README.md
 ```
+# Steps
+source .venv/bin/activate
+cd app/
+python main.py
+navigate to http://127.0.0.1:8000/docs and enter text or alternatively use curl commands
+ex. 
+1. 
+curl -X POST "http://127.0.0.1:8000/submit" -H "Content-Type: application/json" -d '{"text": "John Mark met with Jane Doe in London last year."}'
+curl -X POST "http://127.0.0.1:8000/submit" -H "Content-Type: application/json" -d '{"text": "The CEO of Acme Corp visited Paris on January 1st, 2022."}'
+2. 
+curl "http://127.0.0.1:8000/status/<job_id>"
+3. 
+curl "http://127.0.0.1:8000/result/<job_id>"
 
+# Exapmle result
+![example_usage](https://github.com/user-attachments/assets/71d808d0-d31e-4da1-be28-3af356c47f0b)
 
