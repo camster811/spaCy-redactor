@@ -77,7 +77,28 @@ async def get_job_status(job_id: str):
 # - Returns redacted output if complete
 @app.get("/result/{job_id}")
 async def get_redacted_result(job_id: str):
-    print(f"Fetching result for job_id: {job_id}")
+    if job_id in job_store:
+        status = job_store[job_id]["status"]
+        if status == "completed":
+            result = job_store[job_id]["result"]
+            return JSONResponse(
+                content={
+                    "job_id": job_id,
+                    "redacted_text": result.redacted_text,
+                    "metadata": result.metadata,
+                },
+                status_code=200,
+            )
+        else:
+            return JSONResponse(
+                content={"error": "Job not completed yet"},
+                status_code=202,
+            )
+    else:
+        return JSONResponse(
+            content={"error": "Job ID not found"},
+            status_code=404,
+        )
 
 
 # Include logic to start async task using create_task from asyncio
