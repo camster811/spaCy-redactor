@@ -7,3 +7,23 @@
 # - Reason could be "Direct Identifier", "Inferred Role", etc.
 
 # Return extended metadata list with reasons
+
+
+def annotate_redaction(entities):
+    """
+    Annotate a redacted entity with a reason for redaction.
+    """
+    for ent in entities:
+        if ent["type"] == "PERSON":
+            ent["reason"] = "Direct Identifier"
+        elif ent["type"] == "ORG":
+            ent["reason"] = "Inferred Role"
+        elif ent["type"] == "GPE":
+            ent["reason"] = "Location Identifier"
+        elif ent["type"] == "DATE":
+            ent["reason"] = "Date Reference"
+        elif ent["type"] == "TIME":
+            ent["reason"] = "Time Reference"
+        else:
+            ent["reason"] = "General Redaction"
+    return entities
