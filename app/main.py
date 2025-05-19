@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import uuid
+from logger import logger
 
 
 # Initialize FastAPI instance
@@ -20,11 +21,14 @@ job_store = JobStore()  # job_id: {"status": str, "result": RedactedResult}
 
 async def run_redaction_task(job_id: str, text: str):
     try:
+        logger.info(f"Job {job_id} queued")
         redacted_result = await redact_text(job_id, text)
         result = redacted_result["result"]
 
+        logger.info(f"Job {job_id} completed")
         job_store.add_job(job_id, "completed", result=result)
     except Exception as e:
+        logger.error(f"Job {job_id} failed: {e}")
         job_store.add_job(
             job_id,
             "failed",
@@ -45,11 +49,12 @@ async def submit_text(
     text_submission: TextSubmission, background_tasks: BackgroundTasks
 ):
     job_id = str(uuid.uuid4())
+    logger.info(f"Job {job_id} queued")
     job_store.add_job(
         job_id,
         "queued",
         RedactedResult(job_id=job_id, redacted_text="", metadata=[]),
-    )  # Initialize job status
+    )
     background_tasks.add_task(run_redaction_task, job_id, text_submission.text)
     return JSONResponse(
         content={"job_id": job_id},
@@ -71,6 +76,7 @@ async def get_job_status(job_id: str):
             status_code=200,
         )
     except ValueError:
+        logger.error(f"Job {job_id} not found")
         return JSONResponse(
             content={"error": "Job ID not found"},
             status_code=404,
@@ -98,6 +104,7 @@ async def get_redacted_result(job_id: str):
                 status_code=202,
             )
         elif job["status"] == "failed":
+            logger.error(f"Job {job_id} failed, details: {job['result'].metadata}")
             return JSONResponse(
                 content={
                     "error": "Job failed",
@@ -106,11 +113,13 @@ async def get_redacted_result(job_id: str):
                 status_code=500,
             )
         else:
+            logger.error(f"Unknown job status for {job_id}: {job['status']}")
             return JSONResponse(
                 content={"error": "unknown job status"},
                 status_code=202,
             )
     except ValueError:
+        logger.error(f"Job {job_id} not found")
         return JSONResponse(
             content={"error": "Job ID not found"},
             status_code=404,
