@@ -20,7 +20,7 @@ class JobStatus(BaseModel):
     Model to represent the status of a job.
     """
 
-    job_id: int
+    job_id: str
     status: str
 
 
@@ -31,7 +31,7 @@ class RedactedResult(BaseModel):
     Model to represent the result of a redaction job.
     """
 
-    job_id: int
+    job_id: str
     redacted_text: str
     metadata: List[Dict[str, Any]]
 
@@ -42,18 +42,18 @@ class JobStore:
     """
 
     def __init__(self):
-        self.store: Dict[int, Dict[str, Any]] = {}
+        self.store: Dict[str, Dict[str, Any]] = {}
 
-    def add_job(self, job_id: int, status: str, result: RedactedResult):
+    def add_job(self, job_id: str, status: str, result: RedactedResult):
         self.store[job_id] = {"status": status, "result": result}
 
-    def get_job(self, job_id: int) -> Dict[str, Any]:
+    def get_job(self, job_id: str) -> Dict[str, Any]:
         if job_id in self.store:
             return self.store[job_id]
         else:
             raise ValueError(f"Job ID {job_id} not found in store.")
 
-    def update_job_status(self, job_id: int, status: str):
+    def update_job_status(self, job_id: str, status: str):
         if job_id in self.store:
             self.store[job_id]["status"] = status
         else:
