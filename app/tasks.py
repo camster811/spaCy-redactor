@@ -4,9 +4,10 @@ from typing import Dict, Any
 from redact import sanitize_text
 from models import JobStatus, RedactedResult
 from logger import logger
+import uuid
 
 # In-memory job store: job_id -> status/results
-job_store: Dict[int, Dict[str, Any]] = {}
+job_store: Dict[str, Dict[str, Any]] = {}
 
 
 # Define a coroutine to perform redaction
@@ -15,10 +16,10 @@ job_store: Dict[int, Dict[str, Any]] = {}
 # - Store result and mark job complete
 async def redact_text(job_id: str, text: str) -> Dict[str, Any]:
     # Simulate redaction process
-    JobStatus(job_id=job_id, status=f"processing job {job_id}")
+    JobStatus(job_id=job_id, status="processing")
     await asyncio.sleep(2)  # Simulate processing time
 
-    redacted_text, metadata = sanitize_text(text)
+    redacted_text, metadata = await asyncio.to_thread(sanitize_text, text)
     # Store result in job store
     result = {
         "status": "completed",
@@ -26,7 +27,7 @@ async def redact_text(job_id: str, text: str) -> Dict[str, Any]:
             job_id=job_id, redacted_text=redacted_text, metadata=metadata
         ),
     }
-    job_store[int(job_id)] = result
+    job_store[job_id] = result
     JobStatus(job_id=job_id, status="completed")
     return result
 
@@ -46,16 +47,16 @@ async def job_worker():
             await redact_text(job_id, text)
         except Exception as e:
             logger.error(f"Error processing job {job_id}: {e}")
-            job_store[int(job_id)] = {"status": "failed", "error": str(e)}
+            job_store[job_id] = {"status": "failed", "error": str(e)}
         finally:
             job_queue.task_done()
 
 
-def submit_job(text: str) -> int:
+def submit_job(text: str) -> str:
     """
     Submit a new redaction job and return the job_id.
     """
-    job_id = len(job_store) + 1
+    job_id = str(uuid.uuid4())
     job_store[job_id] = {"status": "queued"}
     asyncio.create_task(job_queue.put((job_id, text)))
     logger.info(f"Job {job_id} submitted")
@@ -66,4 +67,4 @@ def get_job_status(job_id: str) -> Dict[str, Any]:
     """
     Retrieve the status or result of a job.
     """
-    return job_store.get(int(job_id), {"status": "not_found"})
+    return job_store.get(job_id, {"status": "not_found"})
