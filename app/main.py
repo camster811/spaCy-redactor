@@ -60,7 +60,17 @@ async def submit_text(
 # - Returns current job status
 @app.get("/status/{job_id}")
 async def get_job_status(job_id: str):
-    print(f"Checking status for job_id: {job_id}")
+    if job_id in job_store:
+        status = job_store[job_id]["status"]
+        return JSONResponse(
+            content={"job_id": job_id, "status": status},
+            status_code=200,
+        )
+    else:
+        return JSONResponse(
+            content={"error": "Job ID not found"},
+            status_code=404,
+        )
 
 
 # Define GET /result/{job_id}
