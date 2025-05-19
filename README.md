@@ -38,6 +38,7 @@ spacy-redactor/
 └── README.md
 ```
 # Steps
+```
 source .venv/bin/activate
 cd app/
 python main.py
@@ -50,6 +51,7 @@ curl -X POST "http://127.0.0.1:8000/submit" -H "Content-Type: application/json" 
 curl "http://127.0.0.1:8000/status/<job_id>"
 3. 
 curl "http://127.0.0.1:8000/result/<job_id>"
+```
 
 # Exapmle result
 ![example_usage](https://github.com/user-attachments/assets/71d808d0-d31e-4da1-be28-3af356c47f0b)
