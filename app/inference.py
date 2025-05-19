@@ -24,6 +24,10 @@ def annotate_redaction(entities):
             ent["reason"] = "Date Reference"
         elif ent["type"] == "TIME":
             ent["reason"] = "Time Reference"
+        elif ent["type"] == "EMAIL":
+            ent["reason"] = "Email Address"
+        elif ent["type"] == "PHONE":
+            ent["reason"] = "Phone Number"
         else:
             ent["reason"] = "General Redaction"
     return entities

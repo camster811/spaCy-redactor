@@ -1,8 +1,12 @@
 # Load and initialize spaCy NLP model
 import spacy
 from inference import annotate_redaction
+import re
 
 nlp = spacy.load("en_core_web_sm")  # Load the spaCy model for NER
+
+EMAIL_REGEX = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
+PHONE_REGEX = r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b"
 
 
 # Define function to process input text
@@ -36,5 +40,31 @@ def sanitize_text(text):
             # Update offset for next replacements
             offset += len("[REDACTED]") - (end - start)
 
-    metadata = annotate_redaction(metadata)  # Annotate metadata with reasons
+    # Redact email addresses
+    for match in re.finditer(EMAIL_REGEX, redacted_text):
+        start, end = match.span()
+        metadata.append(
+            {
+                "type": "EMAIL",
+                "span": [start, end],
+                "text": redacted_text[start:end],
+            }
+        )
+        redacted_text = redacted_text[:start] + "[REDACTED]" + redacted_text[end:]
+        offset += len("[REDACTED]") - (end - start)
+
+    # Redact phone numbers
+    for match in re.finditer(PHONE_REGEX, redacted_text):
+        start, end = match.span()
+        metadata.append(
+            {
+                "type": "PHONE",
+                "span": [start, end],
+                "text": redacted_text[start:end],
+            }
+        )
+        redacted_text = redacted_text[:start] + "[REDACTED]" + redacted_text[end:]
+        offset += len("[REDACTED]") - (end - start)
+
+    metadata = annotate_redaction(metadata)
     return redacted_text, metadata
